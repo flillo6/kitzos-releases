@@ -1,6 +1,6 @@
 {
-  "version": "2.2.0",
+  "version": "2.2.1",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "",
-  "notes": "KitzOS v2.2.0 FOTA"
+  "notes": "KitzOS v2.2.1 FOTA - Song lock & NVS states"
 }

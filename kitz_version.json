@@ -1,6 +1,7 @@
 {
-  "version": "2.2.3",
+  "version": "2.2.4",
+  "spiffs_version": "2.2.4",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v2.2.3: Audio 16kHz nativo perfetto senza distorsioni + tutte le 17 tracce sbloccate + loop continuo senza interruzioni"
+  "notes": "KitzOS v2.2.4: Comandi vocali musicali e azioni pet, AI Llama-3.3-70B super intelligente con personalita unica, fix audio continuo e FOTA Dual-Update"
 }

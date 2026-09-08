@@ -1,6 +1,6 @@
-﻿{
-  " version\: \2.2.0\,
- \firmware_url\: \https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin\,
- \spiffs_url\: \\,
- \notes\: \KitzOS v2.2.0 - Aggiornamento Cloud FOTA\
+{
+  "version": "2.2.0",
+  "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
+  "spiffs_url": "",
+  "notes": "KitzOS v2.2.0 FOTA"
 }

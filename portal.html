@@ -163,6 +163,16 @@
       border-radius: 30px; font-size: 13px; font-weight: 600;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: none; z-index: 1000;
     }
+    /* Desktop responsive layout */
+    @media (min-width: 768px) {
+      body { padding: 32px; }
+      .app { max-width: 960px; }
+      .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .card { margin-bottom: 0; }
+      header { margin-bottom: 28px; }
+      h1 { font-size: 32px; }
+      .chat-box { height: 300px; }
+    }
   </style>
 </head>
 <body>
@@ -187,6 +197,7 @@
       </div>
     </header>
 
+    <div class="cards-grid">
     <!-- CHAT CON MARTINA -->
     <div class="card">
       <div class="card-title">💌 Chat &amp; Messaggi a Schermo</div>
@@ -264,6 +275,8 @@
         <button class="btn-green" onclick="sendRemoteMusic()">SUONA 🎶</button>
       </div>
     </div>
+
+    </div><!-- /cards-grid -->
 
     <!-- IMPOSTAZIONI CONNESSIONE -->
     <div class="card" style="opacity:0.9;">

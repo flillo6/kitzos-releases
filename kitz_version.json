@@ -1,7 +1,7 @@
 {
-  "version": "2.2.6",
-  "spiffs_version": "2.2.4",
+  "version": "2.2.7",
+  "spiffs_version": "2.2.7",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v2.2.6: Nuova Web App locale per Martina (kitz.local) con Posta del Cuore, guida contapassi Salute, gestione promemoria e sfondi; Portale Remoto Francesco per messaggi, regali e canzoni a distanza"
+  "notes": "KitzOS v2.2.7: Fix audio loop (buffer SRAM + EOF fix), fiori_rosa vocal start, responsive desktop+mobile UI, SPIFFS FOTA sync"
 }

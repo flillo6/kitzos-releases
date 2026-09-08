@@ -1,6 +1,6 @@
 {
-  "version": "2.2.2",
+  "version": "2.2.3",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
-  "spiffs_url": "",
-  "notes": "KitzOS v2.2.2: Batteria reale e fulmine ricarica iPhone + navigazione click uniforme player musicale e tracce bloccate nascoste"
+  "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
+  "notes": "KitzOS v2.2.3: Audio 16kHz nativo perfetto senza distorsioni + tutte le 17 tracce sbloccate + loop continuo senza interruzioni"
 }

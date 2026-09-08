@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fra & Kitz">
+  <title>Fra Portal &bull; Kitz Love Remote</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --card-bg: rgba(16, 26, 46, 0.85);
+      --border: rgba(35, 60, 100, 0.6);
+      --pink: #ff2a6d;
+      --cyan: #05d9e8;
+      --gold: #f9d423;
+      --green: #2ecc71;
+      --text: #f0f6fc;
+      --sub: #8b9bb4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .app { width: 100%; max-width: 440px; }
+    header { text-align: center; margin-bottom: 20px; }
+    .badge {
+      display: inline-block;
+      background: rgba(255, 42, 109, 0.15);
+      border: 1px solid var(--pink);
+      color: var(--pink);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sub { font-size: 12px; color: var(--sub); margin-top: 4px; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chat-box {
+      height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .msg {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.4;
+      position: relative;
+      word-break: break-word;
+    }
+    .msg-fra {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #ff2a6d, #b8004f);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-marti {
+      align-self: flex-start;
+      background: #1a2f4c;
+      color: var(--cyan);
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(5, 217, 232, 0.3);
+    }
+    .msg-meta { font-size: 10px; opacity: 0.7; margin-top: 4px; text-align: right; }
+    .input-row { display: flex; gap: 8px; }
+    input, select {
+      flex: 1;
+      background: #091322;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(5,217,232,0.3); }
+    button {
+      background: linear-gradient(135deg, var(--cyan), #0077ff);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    button:active { transform: scale(0.96); }
+    .btn-pink { background: linear-gradient(135deg, var(--pink), #e0115f); }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #ff9500); color: #000; }
+    .btn-green { background: linear-gradient(135deg, var(--green), #219653); }
+    .mode-btn { flex: 1; background: #0c182a; border: 1px solid var(--border); color: var(--sub); font-size: 12px; font-weight: 700; padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+    .mode-btn.active { background: linear-gradient(135deg, var(--cyan), #0077ff); color: #fff; border-color: var(--cyan); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .gift-btn {
+      padding: 14px;
+      border-radius: 14px;
+      background: #0c182a;
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .gift-btn:active { background: #162a47; border-color: var(--gold); }
+    .gift-icon { font-size: 24px; }
+    /* PIN Gate */
+    #pinGate {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 9999; padding: 20px;
+    }
+    .status-toast {
+      position: fixed; bottom: 20px; background: rgba(0,0,0,0.9);
+      border: 1px solid var(--cyan); color: #fff; padding: 12px 24px;
+      border-radius: 30px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: none; z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PIN GATE -->
+  <div id="pinGate">
+    <div style="font-size:48px; margin-bottom:12px;">🔒</div>
+    <h2 style="margin-bottom:8px;">Portale Privato di Fra</h2>
+    <p style="color:var(--sub); font-size:13px; margin-bottom:20px;">Inserisci il PIN per controllare Kitz a distanza</p>
+    <input type="password" id="pinInput" placeholder="PIN segreto" style="width:200px; text-align:center; font-size:24px; letter-spacing:6px; margin-bottom:16px;">
+    <button onclick="checkPin()" class="btn-pink" style="width:200px; padding:14px;">ACCEDI &rarr;</button>
+  </div>
+
+  <div class="app">
+    <header>
+      <div class="badge" id="connBadge">🟢 MODALITÀ WI-FI LOCALE</div>
+      <h1>Kitz &bull; Telecomando Fra</h1>
+      <p class="sub">Invia messaggi a schermo, regali e musica a Kitz</p>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button id="btnModeLocal" class="mode-btn active" onclick="setConnMode('local')">🏠 Wi-Fi Locale (Subito)</button>
+        <button id="btnModeCloud" class="mode-btn" onclick="setConnMode('cloud')">☁️ Cloud Remoto</button>
+      </div>
+    </header>
+
+    <!-- CHAT CON MARTINA -->
+    <div class="card">
+      <div class="card-title">💌 Chat &amp; Messaggi a Schermo</div>
+      <div class="chat-box" id="chatBox">
+        <div class="msg msg-marti">
+          Caricamento messaggi da Kitz...
+          <div class="msg-meta">Kitz</div>
+        </div>
+      </div>
+      <div class="input-row">
+        <input type="text" id="msgText" placeholder="Scrivi un messaggio per Kitz..." onkeydown="if(event.key==='Enter')sendRemoteMsg()">
+        <button class="btn-pink" onclick="sendRemoteMsg()">INVIA 💌</button>
+      </div>
+    </div>
+
+    <!-- VOCINA TTS -->
+    <div class="card">
+      <div class="card-title">🗣️ Fai Parlare Kitz con la sua Vocina</div>
+      <p style="font-size:12px; color:var(--sub); margin-bottom:10px;">Scrivi una frase che Kitz reciterà a voce:</p>
+      <div class="input-row">
+        <input type="text" id="voiceText" placeholder="Scrivi cosa deve dire Kitz a voce..." onkeydown="if(event.key==='Enter')sendRemoteVoice()">
+        <button onclick="sendRemoteVoice()">PARLA 🔊</button>
+      </div>
+    </div>
+
+    <!-- PACCO REGALO -->
+    <div class="card">
+      <div class="card-title">🎁 Invia un Regalo a Sorpresa</div>
+      <p style="font-size:12px; color:var(--sub);">Fai apparire il pacco regalo sullo schermo di Kitz:</p>
+      <div class="grid-2">
+        <button class="gift-btn" onclick="sendRemoteGift('food', 3)">
+          <span class="gift-icon">🍗</span>
+          <span>+3 Cibo Dispensa</span>
+        </button>
+        <button class="gift-btn" onclick="sendRemoteGift('coins', 50)">
+          <span class="gift-icon">🪙</span>
+          <span>+50 Monete Shop</span>
+        </button>
+        <button class="gift-btn" onclick="sendRemoteGift('coins', 100)">
+          <span class="gift-icon">💰</span>
+          <span>+100 Monete Shop</span>
+        </button>
+        <button class="gift-btn" onclick="sendRemoteGift('spin', 1)">
+          <span class="gift-icon">🎡</span>
+          <span>1 Giro Ruota Gratis</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- DEDICA MUSICALE -->
+    <div class="card">
+      <div class="card-title">🎵 Canzoni su Kitz</div>
+      <p style="font-size:12px; color:var(--sub); margin-bottom:10px;">Avvia un brano sul giradischi di Kitz:</p>
+      <div class="input-row">
+        <select id="trackSelect">
+          <option value="0">0: Spotify Connect</option>
+          <option value="1">1: Lucio Battisti - Fiori rosa...</option>
+          <option value="2">2: Lucio Battisti - Collina ciliegi</option>
+          <option value="3">3: Labadessa - Penso a te</option>
+          <option value="4">4: Labadessa - Cappuccini</option>
+          <option value="5">5: Labadessa - Tra le giostre</option>
+          <option value="6">6: Lucio Battisti - Canzone del sole</option>
+          <option value="7">7: Lucio Battisti - Canto libero</option>
+          <option value="8">8: Umarell - Coccoline</option>
+          <option value="9">9: Chiello - Desaturarsi</option>
+          <option value="10">10: Don McLean - American Pie</option>
+          <option value="11">11: faccia nuvola - seibellaseibella</option>
+          <option value="12">12: Rino Gaetano - A mano a mano</option>
+          <option value="13">13: RHCP - Purple Stain</option>
+          <option value="14">14: Chiello - Quanto ti vorrei</option>
+          <option value="15">15: Chiello - Acqua salata</option>
+          <option value="16">16: Chiello - Crema di buccia</option>
+          <option value="17">17: Chiello - Sul piu bello</option>
+        </select>
+        <button class="btn-green" onclick="sendRemoteMusic()">SUONA 🎶</button>
+      </div>
+    </div>
+
+    <!-- IMPOSTAZIONI CONNESSIONE -->
+    <div class="card" style="opacity:0.9;">
+      <details>
+        <summary style="cursor:pointer; font-size:12px; font-weight:700; color:var(--cyan);">⚙️ Impostazioni Connessione (Wi-Fi Locale &amp; Cloud)</summary>
+        <div style="margin-top:12px; font-size:12px; color:var(--sub);">
+          <label style="display:block; margin-bottom:4px; font-weight:600; color:#fff;">Indirizzo Kitz su Wi-Fi di casa (per modalità locale):</label>
+          <input type="text" id="localHostInput" placeholder="http://kitz.local oppure IP (es. http://192.168.1.50)" style="width:100%; margin-bottom:10px;">
+
+          <label style="display:block; margin-bottom:4px; font-weight:600; color:#fff;">URL Database Firebase (per modalità fuori casa):</label>
+          <input type="text" id="cloudUrlInput" placeholder="https://tuo-kitz-default-rtdb.firebaseio.com" style="width:100%; margin-bottom:10px;">
+
+          <label style="display:block; margin-bottom:4px; font-weight:600; color:#fff;">PIN segreto di accesso al portale:</label>
+          <input type="password" id="newPinInput" placeholder="Nuovo PIN (default 1234)" style="width:100%; margin-bottom:12px;">
+
+          <button style="width:100%;" onclick="saveSettings()">SALVA IMPOSTAZIONI</button>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="status-toast" id="toast"></div>
+
+  <script>
+    const DEFAULT_PIN = "1234";
+    let connMode = localStorage.getItem("kitz_conn_mode") || "local";
+    let localHost = localStorage.getItem("kitz_local_host") || "http://kitz.local";
+    let cloudUrl = localStorage.getItem("kitz_cloud_url") || "";
+    let cloudSec = localStorage.getItem("kitz_cloud_sec") || "";
+
+    function checkPin() {
+      const pin = document.getElementById("pinInput").value;
+      const savedPin = localStorage.getItem("kitz_fra_pin") || DEFAULT_PIN;
+      if (pin === savedPin) {
+        document.getElementById("pinGate").style.display = "none";
+        initApp();
+      } else {
+        alert("PIN errato!");
+      }
+    }
+
+    function initApp() {
+      document.getElementById("localHostInput").value = localHost;
+      document.getElementById("cloudUrlInput").value = cloudUrl;
+      setConnMode(connMode, false);
+      fetchChat();
+      setInterval(fetchChat, 5000);
+    }
+
+    function setConnMode(mode, save = true) {
+      connMode = mode;
+      if (save) localStorage.setItem("kitz_conn_mode", mode);
+      const bLocal = document.getElementById("btnModeLocal");
+      const bCloud = document.getElementById("btnModeCloud");
+      const badge = document.getElementById("connBadge");
+
+      if (mode === "local") {
+        bLocal.classList.add("active");
+        bCloud.classList.remove("active");
+        badge.innerText = "🟢 MODALITÀ WI-FI LOCALE";
+        badge.style.borderColor = "var(--green)";
+        badge.style.color = "var(--green)";
+      } else {
+        bCloud.classList.add("active");
+        bLocal.classList.remove("active");
+        badge.innerText = "☁️ MODALITÀ CLOUD REMOTO";
+        badge.style.borderColor = "var(--cyan)";
+        badge.style.color = "var(--cyan)";
+      }
+      fetchChat();
+    }
+
+    function saveSettings() {
+      localHost = document.getElementById("localHostInput").value.trim().replace(/\/+$/, "");
+      cloudUrl = document.getElementById("cloudUrlInput").value.trim().replace(/\/+$/, "");
+      const newPin = document.getElementById("newPinInput").value.trim();
+      if (newPin.length >= 4) {
+        localStorage.setItem("kitz_fra_pin", newPin);
+      }
+      localStorage.setItem("kitz_local_host", localHost);
+      localStorage.setItem("kitz_cloud_url", cloudUrl);
+      showToast("Impostazioni salvate con successo!");
+      fetchChat();
+    }
+
+    function showToast(text) {
+      const t = document.getElementById("toast");
+      t.innerText = text;
+      t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, 3000);
+    }
+
+    async function sendCommand(payload) {
+      showToast("Invio a Kitz in corso...");
+      if (connMode === "local") {
+        try {
+          const url = new URL("/api/fra/action", localHost || "http://kitz.local");
+          if (payload.type) url.searchParams.set("type", payload.type);
+          if (payload.text) url.searchParams.set("text", payload.text);
+          if (payload.gift) url.searchParams.set("gift", payload.gift);
+          if (payload.amount) url.searchParams.set("amount", payload.amount);
+          if (payload.track !== undefined) url.searchParams.set("track", payload.track);
+
+          const res = await fetch(url.toString());
+          if (res.ok) {
+            showToast("Azione eseguita su Kitz! ✨");
+            return true;
+          } else {
+            showToast("Errore risposta Kitz!");
+            return false;
+          }
+        } catch (e) {
+          console.error(e);
+          alert("Impossibile raggiungere Kitz su Wi-Fi locale (" + localHost + "). Verifica che sia acceso e collegato alla stessa rete, oppure usa l'IP numerico.");
+          return false;
+        }
+      } else {
+        if (!cloudUrl) {
+          alert("Configura prima l'URL Cloud Firebase nelle impostazioni!");
+          return false;
+        }
+        try {
+          let endpoint = cloudUrl + "/kitz/inbox.json";
+          if (cloudSec) endpoint += "?auth=" + cloudSec;
+          const res = await fetch(endpoint, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            showToast("Inviato al Cloud! Kitz lo riceverà a breve.");
+            return true;
+          }
+          return false;
+        } catch (e) {
+          alert("Errore connessione Cloud: " + e.message);
+          return false;
+        }
+      }
+    }
+
+    async function sendRemoteMsg() {
+      const el = document.getElementById("msgText");
+      const text = el.value.trim();
+      if (!text) return;
+      const ok = await sendCommand({ type: "msg", text: text, timestamp: Date.now() });
+      if (ok) {
+        appendLocalMsg("fra", text, "Adesso");
+        el.value = "";
+      }
+    }
+
+    async function sendRemoteVoice() {
+      const el = document.getElementById("voiceText");
+      const text = el.value.trim();
+      if (!text) return;
+      const ok = await sendCommand({ type: "voice", text: text, timestamp: Date.now() });
+      if (ok) {
+        appendLocalMsg("fra", "🗣️ Vocina: \"" + text + "\"", "Adesso");
+        el.value = "";
+      }
+    }
+
+    async function sendRemoteGift(type, amount) {
+      const names = { food: "+3 Cibo", coins: "+" + amount + " Monete", spin: "Giro Ruota" };
+      const ok = await sendCommand({ type: "gift", gift: type, amount: amount, timestamp: Date.now() });
+      if (ok) {
+        appendLocalMsg("fra", "🎁 Regalo inviato: " + names[type], "Adesso");
+      }
+    }
+
+    async function sendRemoteMusic() {
+      const sel = document.getElementById("trackSelect");
+      const idx = parseInt(sel.value);
+      const title = sel.options[sel.selectedIndex].text;
+      const ok = await sendCommand({ type: "music", track: idx, timestamp: Date.now() });
+      if (ok) {
+        appendLocalMsg("fra", "🎶 Canzone avviata: " + title, "Adesso");
+      }
+    }
+
+    function appendLocalMsg(sender, text, time) {
+      const box = document.getElementById("chatBox");
+      const div = document.createElement("div");
+      div.className = "msg msg-" + sender;
+      div.innerHTML = text + `<div class="msg-meta">${sender === 'fra' ? 'Tu' : 'Martina'} &bull; ${time}</div>`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function fetchChat() {
+      if (connMode === "local") {
+        try {
+          const res = await fetch((localHost || "http://kitz.local") + "/api/fra/chat_history");
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.messages)) {
+              renderChatHistory(data.messages);
+            }
+          }
+        } catch (e) {
+          // silently wait
+        }
+      } else {
+        if (!cloudUrl) return;
+        try {
+          let endpoint = cloudUrl + "/kitz/outbox.json";
+          if (cloudSec) endpoint += "?auth=" + cloudSec;
+          const res = await fetch(endpoint);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.text && data.timestamp !== window.lastOutboxTs) {
+              window.lastOutboxTs = data.timestamp;
+              appendLocalMsg("marti", data.text, "Adesso");
+              showToast("Nuovo messaggio da Martina! 💌");
+            }
+          }
+        } catch (e) {
+          console.log("Cloud polling error", e);
+        }
+      }
+    }
+
+    function renderChatHistory(msgs) {
+      const box = document.getElementById("chatBox");
+      box.innerHTML = "";
+      if (msgs.length === 0) {
+        box.innerHTML = "<div class='msg msg-marti'>Nessun messaggio ancora.<div class='msg-meta'>Kitz</div></div>";
+        return;
+      }
+      msgs.forEach(m => {
+        const isFra = (m.sender === "fra");
+        const div = document.createElement("div");
+        div.className = "msg msg-" + (isFra ? "fra" : "marti");
+        let content = m.text;
+        if (m.gift) content = "🎁 " + content;
+        div.innerHTML = content + `<div class="msg-meta">${isFra ? 'Tu' : 'Martina'} &bull; ${m.time}</div>`;
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
+</body>
+</html>

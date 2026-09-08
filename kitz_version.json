@@ -2,5 +2,5 @@
   "version": "2.2.2",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "",
-  "notes": "KitzOS v2.2.2 FOTA - Real battery & iPhone charging indicator"
+  "notes": "KitzOS v2.2.2: Batteria reale e fulmine ricarica iPhone + navigazione click uniforme player musicale e tracce bloccate nascoste"
 }

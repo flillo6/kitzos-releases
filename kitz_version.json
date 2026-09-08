@@ -1,7 +1,7 @@
 {
-  "version": "2.2.5",
+  "version": "2.2.6",
   "spiffs_version": "2.2.4",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v2.2.5: Canzoni bloccate gestite con ironia, controllo ferreo dispensa cibo (+35%), modifica promemoria da voce e battute su Gigia e Giulia"
+  "notes": "KitzOS v2.2.6: Nuova Web App locale per Martina (kitz.local) con Posta del Cuore, guida contapassi Salute, gestione promemoria e sfondi; Portale Remoto Francesco per messaggi, regali e canzoni a distanza"
 }

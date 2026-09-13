@@ -1,7 +1,8 @@
 {
-  "version": "2.2.7",
-  "spiffs_version": "2.2.7",
+  "version": "0.1",
+  "spiffs_version": "0.1",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v2.2.7: Fix audio loop (buffer SRAM + EOF fix), fiori_rosa vocal start, responsive desktop+mobile UI, SPIFFS FOTA sync"
+  "notes": "KitzOS v0.1: Golden Master (Martina & Fra Edition)",
+  "force": true
 }

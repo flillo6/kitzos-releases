@@ -1,8 +1,8 @@
 {
   "version": "0.1",
   "spiffs_version": "0.1",
-  "firmware_url": "https://cdn.jsdelivr.net/gh/flillo6/kitzos-releases@main/firmware.bin",
-  "spiffs_url": "https://cdn.jsdelivr.net/gh/flillo6/kitzos-releases@main/spiffs.bin",
+  "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
+  "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
   "notes": "KitzOS v0.1: Golden Master (Martina & Fra Edition)",
-  "force": true
+  "force": false
 }

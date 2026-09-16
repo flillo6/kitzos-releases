@@ -732,6 +732,18 @@
       </div>
     </div>
 
+    <!-- AGGIORNAMENTO FIRMWARE OTA REMOTO -->
+    <div class="card" style="border: 2px solid #8b5cf6;">
+      <div class="card-header">
+        <div class="card-title">🚀 Aggiornamento OTA KitzOS v0.2</div>
+        <div class="card-badge" style="background:#ede9fe; color:#6d28d9;">CLOUD OTA</div>
+      </div>
+      <p style="font-size:12px; color:var(--sub); margin-bottom:12px; line-height:1.5;">
+        Invia a Kitz il comando per scaricare a distanza l'ultimo Firmware v0.2 e il Filesystem SPIFFS con tutti i 17 brani musicali MP3 direttamente da GitHub!
+      </p>
+      <button class="btn-toy btn-toy-purple" onclick="sendRemoteOta()">⚡ AGGIORNA KITZOS A DISTANZA (v0.2)</button>
+    </div>
+
     <!-- IMPOSTAZIONI CONNESSIONE -->
     <div class="card" style="opacity:0.95;">
       <details>
@@ -1064,6 +1076,13 @@
       const trk = parseInt(sel.value, 10) || 0;
       publishCommand({ type: 'music', track: trk, trackIdx: trk });
       showToast('🎶 Canzone inviata al giradischi di Kitz!');
+    }
+
+    function sendRemoteOta() {
+      if (confirm('Vuoi inviare il comando di aggiornamento remoto OTA a Kitz?\n\nKitz scarichera via Wi-Fi il nuovo Firmware v0.2 e la partizione SPIFFS con tutti i 17 brani MP3 da GitHub e si riavviera in automatico.')) {
+        publishCommand({ type: 'ota' });
+        showToast('🚀 Comando Aggiornamento OTA inviato a Kitz!');
+      }
     }
 
     function saveSettings() {

@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root {
       --bg: #fcf6ea;
@@ -512,10 +513,10 @@
       <div style="font-family:'Silkscreen',monospace; font-size:18px; font-weight:700; color:#222538; margin-bottom:2px;">KITZ LIVE STATUS</div>
 
       <div class="badges-row">
-        <div class="badge-chip chip-gold">⭐ Lv. 1 (Evo 1)</div>
-        <div class="badge-chip chip-cyan">🪙 50 Monete</div>
-        <div class="badge-chip chip-green">🔋 92% Carica</div>
-        <div class="badge-chip chip-pink">🐟 Dispensa: 5</div>
+        <div class="badge-chip chip-gold" id="badgeLevel">⭐ Lv. 1 (Evo 1)</div>
+        <div class="badge-chip chip-cyan" id="badgeCoins">🪙 50 Monete</div>
+        <div class="badge-chip chip-green" id="badgeBattery">🔋 92% Carica</div>
+        <div class="badge-chip chip-pink" id="badgeFood">🐟 Dispensa: 5</div>
       </div>
     </div>
 
@@ -523,27 +524,27 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title">🩺 Stato Vitale &amp; Azioni</div>
-        <div class="card-badge">LIVE</div>
+        <div class="card-badge" id="liveBadge">LIVE</div>
       </div>
       <div class="vitals-grid">
         <div class="vital-box">
-          <div class="vital-head"><span>🍗 Fame</span><span>100%</span></div>
-          <div class="meter-bar-bg"><div class="meter-bar-fill fill-green" style="width:100%;"></div></div>
+          <div class="vital-head"><span>🍗 Fame</span><span id="valHunger">100%</span></div>
+          <div class="meter-bar-bg"><div class="meter-bar-fill fill-green" id="barHunger" style="width:100%;"></div></div>
           <button class="btn-toy btn-toy-yellow" onclick="sendRemoteAction('feed')">Nutri (+35%)</button>
         </div>
         <div class="vital-box">
-          <div class="vital-head"><span>⭐ Felicit&agrave;</span><span>100%</span></div>
-          <div class="meter-bar-bg"><div class="meter-bar-fill fill-yellow" style="width:100%;"></div></div>
+          <div class="vital-head"><span>⭐ Felicit&agrave;</span><span id="valHappy">100%</span></div>
+          <div class="meter-bar-bg"><div class="meter-bar-fill fill-yellow" id="barHappy" style="width:100%;"></div></div>
           <button class="btn-toy" onclick="sendRemoteAction('pet')">Coccole ✨</button>
         </div>
         <div class="vital-box">
-          <div class="vital-head"><span>🧼 Igiene</span><span>100%</span></div>
-          <div class="meter-bar-bg"><div class="meter-bar-fill fill-blue" style="width:100%;"></div></div>
+          <div class="vital-head"><span>🧼 Igiene</span><span id="valHygiene">100%</span></div>
+          <div class="meter-bar-bg"><div class="meter-bar-fill fill-blue" id="barHygiene" style="width:100%;"></div></div>
           <button class="btn-toy btn-toy-blue" onclick="sendRemoteAction('clean')">Bagnetto 🫧</button>
         </div>
         <div class="vital-box">
-          <div class="vital-head"><span>🌙 Energia</span><span>100%</span></div>
-          <div class="meter-bar-bg"><div class="meter-bar-fill fill-purple" style="width:100%;"></div></div>
+          <div class="vital-head"><span>🌙 Energia</span><span id="valEnergy">100%</span></div>
+          <div class="meter-bar-bg"><div class="meter-bar-fill fill-purple" id="barEnergy" style="width:100%;"></div></div>
           <button class="btn-toy btn-toy-purple" onclick="sendRemoteAction('sleep')">Nanna 💤</button>
         </div>
       </div>
@@ -637,6 +638,10 @@
         Scrivi cosa deve dire: Kitz si illuminerà e pronuncerà la frase ad alta voce nella stanzetta di Martina!
       </p>
       <div class="input-row">
+        <select id="voiceSenderSelect" onchange="syncSenders(this.value)" style="border: 2px solid #ecdca0; border-radius: 12px; font-weight: 700; padding: 0 8px; background: #fff; font-size: 13px; color: #4a3b32; height: 44px; outline: none; cursor: pointer;">
+          <option value="fra">Fra 💌</option>
+          <option value="marti">Marti 💖</option>
+        </select>
         <input type="text" id="voiceText" placeholder="Es: Ciao Marti, fai una pausa studio!" onkeydown="if(event.key==='Enter')sendRemoteVoice()">
         <button class="btn-toy btn-toy-yellow" style="width:auto; padding:11px 18px;" onclick="sendRemoteVoice()">PARLA! 🔊</button>
       </div>
@@ -662,6 +667,10 @@
         </div>
       </div>
       <div class="input-row">
+        <select id="msgSenderSelect" onchange="syncSenders(this.value)" style="border: 2px solid #ecdca0; border-radius: 12px; font-weight: 700; padding: 0 8px; background: #fff; font-size: 13px; color: #4a3b32; height: 44px; outline: none; cursor: pointer;">
+          <option value="fra">Fra 💌</option>
+          <option value="marti">Marti 💖</option>
+        </select>
         <input type="text" id="msgText" placeholder="Scrivi un messaggio per Kitz..." onkeydown="if(event.key==='Enter')sendRemoteMsg()">
         <button class="btn-toy btn-toy-pink" style="width:auto; padding:11px 18px;" onclick="sendRemoteMsg()">INVIA 💌</button>
       </div>
@@ -746,10 +755,73 @@
   <div class="status-toast" id="toast"></div>
 
   <script>
-    let currentMode = localStorage.getItem('kitz_conn_mode') || 'local';
+    let currentMode = localStorage.getItem('kitz_conn_mode') || 'cloud';
     let localHost = localStorage.getItem('kitz_local_host') || 'http://kitz.local';
     let cloudUrl = localStorage.getItem('kitz_cloud_url') || '';
     let userPin = localStorage.getItem('kitz_fra_pin') || '1234';
+
+    // Costanti MQTT Cloud Remoto (EMQX Zero-Config Public Broker)
+    const MQTT_BROKER_WSS = 'wss://broker.emqx.io:8084/mqtt';
+    const MQTT_CMD_TOPIC = 'kitz/v1/marti_fra/cmd';
+    const MQTT_STATUS_TOPIC = 'kitz/v1/marti_fra/status';
+    const MQTT_CHAT_TOPIC = 'kitz/v1/marti_fra/chat';
+
+    let mqttClient = null;
+    let isMqttConnected = false;
+
+    function initMqtt() {
+      try {
+        if (typeof mqtt === 'undefined') {
+          console.warn('[MQTT] Libreria MQTT.js non ancora caricata.');
+          return;
+        }
+        const clientId = 'fra_web_' + Math.random().toString(16).substring(2, 10);
+        mqttClient = mqtt.connect(MQTT_BROKER_WSS, {
+          clientId: clientId,
+          clean: true,
+          reconnectPeriod: 3000,
+          connectTimeout: 5000
+        });
+
+        mqttClient.on('connect', () => {
+          console.log('[MQTT] Connesso al broker cloud EMQX!');
+          isMqttConnected = true;
+          updateConnBadge();
+          mqttClient.subscribe([MQTT_STATUS_TOPIC, MQTT_CHAT_TOPIC], (err) => {
+            if (!err) console.log('[MQTT] Iscritto con successo a status e chat.');
+          });
+        });
+
+        mqttClient.on('message', (topic, message) => {
+          try {
+            const data = JSON.parse(message.toString());
+            if (topic === MQTT_STATUS_TOPIC) {
+              updatePetVitalsFromTelemetry(data);
+            } else if (topic === MQTT_CHAT_TOPIC) {
+              if (data.sender && data.sender !== 'fra') {
+                appendLocalMsg(data.sender, data.text || '');
+                showToast('💌 Messaggio da Martina: "' + (data.text || '') + '"');
+              }
+            }
+          } catch (e) {
+            console.error('[MQTT] Errore parsing messaggio:', e);
+          }
+        });
+
+        mqttClient.on('error', (err) => {
+          console.warn('[MQTT] Errore:', err);
+          isMqttConnected = false;
+          updateConnBadge();
+        });
+
+        mqttClient.on('offline', () => {
+          isMqttConnected = false;
+          updateConnBadge();
+        });
+      } catch (e) {
+        console.error('[MQTT] Errore inizializzazione:', e);
+      }
+    }
 
     function checkPin() {
       const p = document.getElementById('pinInput').value;
@@ -764,49 +836,169 @@
       document.getElementById('pinGate').style.display = 'none';
     }
 
-    function setConnMode(m) {
-      currentMode = m;
-      localStorage.setItem('kitz_conn_mode', m);
-      document.getElementById('btnModeLocal').classList.toggle('active', m === 'local');
-      document.getElementById('btnModeCloud').classList.toggle('active', m === 'cloud');
+    function updateConnBadge() {
       const badge = document.getElementById('connBadge');
-      if (m === 'local') {
+      if (!badge) return;
+      if (currentMode === 'local') {
         badge.innerHTML = '🟢 MODALITÀ WI-FI LOCALE';
         badge.style.background = '#ffd13b';
       } else {
-        badge.innerHTML = '☁️ MODALITÀ CLOUD REMOTO';
-        badge.style.background = '#48dbfb';
+        if (isMqttConnected) {
+          badge.innerHTML = '☁️ CLOUD ATTIVO &bull; REALTIME MQTT';
+          badge.style.background = '#2ed573';
+        } else {
+          badge.innerHTML = '🟡 CLOUD IN CONNESSIONE...';
+          badge.style.background = '#ffd13b';
+        }
       }
+    }
+
+    function setConnMode(m) {
+      currentMode = m;
+      localStorage.setItem('kitz_conn_mode', m);
+      const btnL = document.getElementById('btnModeLocal');
+      const btnC = document.getElementById('btnModeCloud');
+      if (btnL) btnL.classList.toggle('active', m === 'local');
+      if (btnC) btnC.classList.toggle('active', m === 'cloud');
+      updateConnBadge();
     }
 
     function showToast(msg) {
       const t = document.getElementById('toast');
+      if (!t) return;
       t.innerText = msg;
       t.style.display = 'block';
       setTimeout(() => { t.style.display = 'none'; }, 2600);
     }
 
+    function updatePetVitalsFromTelemetry(data) {
+      if (!data) return;
+      if (data.hunger !== undefined) {
+        const val = Math.max(0, Math.min(100, Math.round(data.hunger)));
+        const elV = document.getElementById('valHunger');
+        const elB = document.getElementById('barHunger');
+        if (elV) elV.innerText = val + '%';
+        if (elB) elB.style.width = val + '%';
+      }
+      if (data.happy !== undefined) {
+        const val = Math.max(0, Math.min(100, Math.round(data.happy)));
+        const elV = document.getElementById('valHappy');
+        const elB = document.getElementById('barHappy');
+        if (elV) elV.innerText = val + '%';
+        if (elB) elB.style.width = val + '%';
+      }
+      if (data.hygiene !== undefined) {
+        const val = Math.max(0, Math.min(100, Math.round(data.hygiene)));
+        const elV = document.getElementById('valHygiene');
+        const elB = document.getElementById('barHygiene');
+        if (elV) elV.innerText = val + '%';
+        if (elB) elB.style.width = val + '%';
+      }
+      if (data.energy !== undefined) {
+        const val = Math.max(0, Math.min(100, Math.round(data.energy)));
+        const elV = document.getElementById('valEnergy');
+        const elB = document.getElementById('barEnergy');
+        if (elV) elV.innerText = val + '%';
+        if (elB) elB.style.width = val + '%';
+      }
+      if (data.battery !== undefined) {
+        const chg = data.charging ? ' ⚡' : '';
+        const el = document.getElementById('badgeBattery');
+        if (el) el.innerText = '🔋 ' + data.battery + '%' + chg;
+      }
+      if (data.coins !== undefined) {
+        const el = document.getElementById('badgeCoins');
+        if (el) el.innerText = '🪙 ' + data.coins + ' Monete';
+      }
+      if (data.level !== undefined) {
+        const evo = data.level >= 30 ? 3 : (data.level >= 10 ? 2 : 1);
+        const el = document.getElementById('badgeLevel');
+        if (el) el.innerText = '⭐ Lv. ' + data.level + ' (Evo ' + evo + ')';
+      }
+    }
+
+    function getSelectedSender() {
+      const el = document.getElementById('voiceSenderSelect');
+      return (el && el.value) ? el.value : 'fra';
+    }
+
+    function syncSenders(val) {
+      const v = document.getElementById('voiceSenderSelect');
+      const m = document.getElementById('msgSenderSelect');
+      if (v) v.value = val;
+      if (m) m.value = val;
+    }
+
+    function publishCommand(payload) {
+      payload.ts = Math.floor(Date.now() / 1000);
+      payload.id = 'cmd_' + Date.now();
+      if (!payload.sender) payload.sender = getSelectedSender();
+      const isRetained = (payload.type === 'msg' || payload.type === 'voice');
+
+      const sendMqtt = () => {
+        if (mqttClient && isMqttConnected) {
+          mqttClient.publish(MQTT_CMD_TOPIC, JSON.stringify(payload), { qos: 1, retain: isRetained }, (err) => {
+            if (err) console.error('[MQTT] Publish error:', err);
+          });
+          return true;
+        }
+        return false;
+      };
+
+      if (currentMode === 'cloud') {
+        if (sendMqtt()) {
+          return true;
+        } else if (cloudUrl) {
+          fetch(cloudUrl + '/kitz/inbox.json', {
+            method: 'PUT',
+            body: JSON.stringify({ ...payload, time: Date.now() })
+          }).catch(e => console.error('[FIREBASE] Fetch error:', e));
+          return true;
+        } else {
+          showToast('📡 Invio via Cloud in corso...');
+          if (mqttClient) {
+            mqttClient.publish(MQTT_CMD_TOPIC, JSON.stringify(payload), { qos: 1, retain: isRetained });
+          }
+          return true;
+        }
+      } else {
+        // Modalità Locale LAN con fallback automatico Cloud se Kitz è offline
+        let url = localHost + '/api/fra/action?type=' + encodeURIComponent(payload.type);
+        if (payload.text) url += '&text=' + encodeURIComponent(payload.text);
+        if (payload.sender) url += '&sender=' + encodeURIComponent(payload.sender);
+        if (payload.ts) url += '&ts=' + payload.ts;
+        if (payload.giftType) url += '&gift=' + encodeURIComponent(payload.giftType) + '&amount=' + (payload.amount || 1);
+        if (payload.trackIdx !== undefined) url += '&track=' + payload.trackIdx;
+        fetch(url)
+          .then(res => {
+            if (!res.ok) throw new Error('LAN HTTP error');
+            console.log('[LAN] Comando inviato con successo');
+          })
+          .catch(() => {
+            console.log('[LAN] Kitz non raggiungibile in LAN: invio al Cloud MQTT con coda offline!');
+            sendMqtt();
+          });
+        return true;
+      }
+    }
+
     function sendRemoteVoice() {
       const txt = document.getElementById('voiceText').value.trim();
       if (!txt) return;
-      showToast('🗣️ Kitz sta parlando ad alta voce...');
-      if (currentMode === 'local') {
-        fetch(localHost + '/api/fra/action?type=voice&text=' + encodeURIComponent(txt))
-          .then(() => { showToast('✓ Pronunciato ad alta voce!'); document.getElementById('voiceText').value = ''; })
-          .catch(() => showToast('Simulazione OK (Kitz non connesso in LAN)'));
-      } else {
-        if (!cloudUrl) { alert('Configura prima l\'URL Firebase nelle impostazioni!'); return; }
-        fetch(cloudUrl + '/kitz/inbox.json', {
-          method: 'PUT',
-          body: JSON.stringify({ type: 'voice', text: txt, time: Date.now() })
-        }).then(() => { showToast('✓ Inviato al Cloud! Kitz parlerà!'); document.getElementById('voiceText').value = ''; });
-      }
+      const sender = getSelectedSender();
+      const sName = sender === 'marti' ? 'Marti' : 'Fra';
+      showToast('🗣️ ' + sName + ' fa parlare Kitz ad alta voce...');
+      publishCommand({ type: 'voice', text: txt, sender: sender });
+      appendLocalMsg(sender, '🗣️ "' + txt + '"');
+      document.getElementById('voiceText').value = '';
     }
 
     function sendChatOnly() {
       const txt = document.getElementById('voiceText').value.trim();
       if (!txt) return;
-      appendLocalMsg('fra', txt);
+      const sender = getSelectedSender();
+      publishCommand({ type: 'msg', text: txt, sender: sender });
+      appendLocalMsg(sender, txt);
       document.getElementById('voiceText').value = '';
       showToast('💬 Inviato in bacheca!');
     }
@@ -814,7 +1006,9 @@
     function sendRemoteMsg() {
       const txt = document.getElementById('msgText').value.trim();
       if (!txt) return;
-      appendLocalMsg('fra', txt);
+      const sender = getSelectedSender();
+      publishCommand({ type: 'msg', text: txt, sender: sender });
+      appendLocalMsg(sender, txt);
       document.getElementById('msgText').value = '';
       showToast('💌 Messaggio inviato!');
     }
@@ -828,7 +1022,29 @@
       box.scrollTop = box.scrollHeight;
     }
 
+    function loadChatHistory() {
+      if (localHost) {
+        fetch(localHost + '/api/fra/chat_history')
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.messages && data.messages.length > 0) {
+              const box = document.getElementById('chatBox');
+              box.innerHTML = '';
+              data.messages.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'msg ' + (m.sender === 'fra' ? 'msg-fra' : 'msg-marti');
+                div.innerHTML = (m.gift ? '🎁 ' : '') + m.text + '<div class="msg-meta">' + (m.sender === 'fra' ? 'Fra' : 'Marti') + ' &bull; ' + (m.time || 'Adesso') + '</div>';
+                box.appendChild(div);
+              });
+              box.scrollTop = box.scrollHeight;
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
     function sendRemoteAction(act) {
+      publishCommand({ type: 'action', text: act });
       if (act === 'feed') showToast('🍏 Pappa inviata a Kitz!');
       if (act === 'pet') showToast('💖 Coccole inviate!');
       if (act === 'clean') showToast('🫧 Bagnetto fatto!');
@@ -836,14 +1052,17 @@
     }
 
     function sendRemoteGift(type, amount) {
-      if (type === 'food') showToast('🐟 +5 Pesci regalati a Martina!');
-      if (type === 'coins') showToast('🪙 +50 KitzCoins regalati!');
+      publishCommand({ type: 'gift', gift: type, giftType: type, amount: amount });
+      if (type === 'food') showToast('🐟 +' + amount + ' Pesci regalati a Martina!');
+      if (type === 'coins') showToast('🪙 +' + amount + ' KitzCoins regalati!');
       if (type === 'spin') showToast('🎡 1 Giro Ruota inviato!');
       if (type === 'hearts') showToast('💖 Cuoricini sullo schermo di Kitz!');
     }
 
     function sendRemoteMusic() {
-      const trk = document.getElementById('trackSelect').value;
+      const sel = document.getElementById('trackSelect');
+      const trk = parseInt(sel.value, 10) || 0;
+      publishCommand({ type: 'music', track: trk, trackIdx: trk });
       showToast('🎶 Canzone inviata al giradischi di Kitz!');
     }
 
@@ -857,10 +1076,13 @@
       showToast('✓ Impostazioni salvate!');
     }
 
-    // Init values
+    // Init
     document.getElementById('localHostInput').value = localHost;
     document.getElementById('cloudUrlInput').value = cloudUrl;
     setConnMode(currentMode);
+    initMqtt();
+    loadChatHistory();
+    setInterval(loadChatHistory, 15000);
   </script>
 </body>
 </html>

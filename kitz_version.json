@@ -4,5 +4,5 @@
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
   "notes": "KitzOS v0.2: 17 Brani MP3 SPIFFS + Spotify 1-Click Callback + Cloud OTA Trigger",
-  "force": true
+  "force": false
 }

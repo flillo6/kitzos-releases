@@ -1,8 +1,8 @@
 {
-  "version": "0.2",
+  "version": "0.2.1",
   "spiffs_version": "0.2",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v0.2: 17 Brani MP3 SPIFFS + Spotify 1-Click Callback + Cloud OTA Trigger",
+  "notes": "KitzOS v0.2.1: Smart Battery Auto-Sleep + Offline Decay Protection",
   "force": false
 }

@@ -1,8 +1,8 @@
 {
-  "version": "0.2.2",
+  "version": "0.2.3",
   "spiffs_version": "0.2",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v0.2.2: FaceUI Always-On + 802.11 Modem-Sleep + Audio PA Auto-Mute",
+  "notes": "KitzOS v0.2.3: Heart Shower Screen Animation + All 17 Tracks Permanently Unlocked",
   "force": false
 }

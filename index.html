@@ -554,76 +554,76 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title">🏆 Trofei &amp; Record di Martina</div>
-        <div class="card-badge">8 MEDAGLIE</div>
+        <div class="card-badge" id="medaglieBadge">-- / 8 MEDAGLIE</div>
       </div>
 
       <div class="stats-strip">
         <div class="stat-mini-pill">
-          <div class="stat-mini-val">4.2k</div>
+          <div class="stat-mini-val" id="statMorsi">--</div>
           <div class="stat-mini-lbl">Morsi</div>
         </div>
         <div class="stat-mini-pill">
-          <div class="stat-mini-val">3.8km</div>
+          <div class="stat-mini-val" id="statZen">--</div>
           <div class="stat-mini-lbl">Zen H-Score</div>
         </div>
         <div class="stat-mini-pill">
-          <div class="stat-mini-val">128</div>
+          <div class="stat-mini-val" id="statPesci">--</div>
           <div class="stat-mini-lbl">Pesci</div>
         </div>
         <div class="stat-mini-pill">
-          <div class="stat-mini-val">28k</div>
+          <div class="stat-mini-val" id="statPassi">--</div>
           <div class="stat-mini-lbl">Passi Tot</div>
         </div>
       </div>
 
       <div class="ach-grid">
-        <div class="ach-card unlocked">
+        <div class="ach-card" id="achCard1">
           <div class="ach-icon">🐣</div>
           <div class="ach-title">Primi Passi</div>
           <div class="ach-sub">Adotta Kitz (Lv.1)</div>
-          <div class="ach-status status-done">SBLOCCATO ★</div>
+          <div class="ach-status" id="achStatus1">--</div>
         </div>
-        <div class="ach-card unlocked">
+        <div class="ach-card" id="achCard2">
           <div class="ach-icon">⭐</div>
           <div class="ach-title">Livello 10</div>
           <div class="ach-sub">Prima Evoluzione (Evo 2)</div>
-          <div class="ach-status status-done">SBLOCCATO ★</div>
+          <div class="ach-status" id="achStatus2">--</div>
         </div>
-        <div class="ach-card">
+        <div class="ach-card" id="achCard3">
           <div class="ach-icon">🦈</div>
           <div class="ach-title">Morso Vorace</div>
           <div class="ach-sub">10.000 Morsi Chomp</div>
-          <div class="ach-status status-prog">4.2k / 10k</div>
+          <div class="ach-status" id="achStatus3">--</div>
         </div>
-        <div class="ach-card">
+        <div class="ach-card" id="achCard4">
           <div class="ach-icon">⚡</div>
           <div class="ach-title">Riflessi Flash</div>
           <div class="ach-sub">10.000 Schivate Chomp</div>
-          <div class="ach-status status-prog">3.1k / 10k</div>
+          <div class="ach-status" id="achStatus4">--</div>
         </div>
-        <div class="ach-card unlocked">
+        <div class="ach-card" id="achCard5">
           <div class="ach-icon">🚀</div>
           <div class="ach-title">Orbita Stratos</div>
           <div class="ach-sub">2.500m Bubble Zen</div>
-          <div class="ach-status status-done">SBLOCCATO ★</div>
+          <div class="ach-status" id="achStatus5">--</div>
         </div>
-        <div class="ach-card">
+        <div class="ach-card" id="achCard6">
           <div class="ach-icon">🌌</div>
           <div class="ach-title">Nebulosa Zen</div>
           <div class="ach-sub">5.000m Bubble Zen</div>
-          <div class="ach-status status-prog">3.8k / 5k</div>
+          <div class="ach-status" id="achStatus6">--</div>
         </div>
-        <div class="ach-card">
+        <div class="ach-card" id="achCard7">
           <div class="ach-icon">🎣</div>
           <div class="ach-title">Leggenda Mare</div>
           <div class="ach-sub">10.000 Pesci Pescati</div>
-          <div class="ach-status status-prog">128 / 10k</div>
+          <div class="ach-status" id="achStatus7">--</div>
         </div>
-        <div class="ach-card">
+        <div class="ach-card" id="achCard8">
           <div class="ach-icon">🎨</div>
           <div class="ach-title">Collezionista</div>
           <div class="ach-sub">4 Stanzette su 4</div>
-          <div class="ach-status status-prog">3 / 4 Sfondi</div>
+          <div class="ach-status" id="achStatus8">--</div>
         </div>
       </div>
     </div>
@@ -883,8 +883,29 @@
       setTimeout(() => { t.style.display = 'none'; }, 2600);
     }
 
+    function updateAchCard(cardId, statusId, isUnlocked, text) {
+      const card = document.getElementById(cardId);
+      const status = document.getElementById(statusId);
+      if (card) {
+        if (isUnlocked) card.classList.add('unlocked');
+        else card.classList.remove('unlocked');
+      }
+      if (status) {
+        status.innerText = text;
+        status.className = 'ach-status ' + (isUnlocked ? 'status-done' : 'status-prog');
+      }
+    }
+
     function updatePetVitalsFromTelemetry(data) {
       if (!data) return;
+
+      const liveB = document.getElementById('liveBadge');
+      if (liveB) {
+        liveB.innerText = 'LIVE';
+        liveB.style.background = '#2ed573';
+        liveB.style.color = '#fff';
+      }
+
       if (data.hunger !== undefined) {
         const val = Math.max(0, Math.min(100, Math.round(data.hunger)));
         const elV = document.getElementById('valHunger');
@@ -922,11 +943,54 @@
         const el = document.getElementById('badgeCoins');
         if (el) el.innerText = '🪙 ' + data.coins + ' Monete';
       }
+      if (data.food !== undefined) {
+        const el = document.getElementById('badgeFood');
+        if (el) el.innerText = '🐟 Dispensa: ' + data.food;
+      }
       if (data.level !== undefined) {
         const evo = data.level >= 30 ? 3 : (data.level >= 10 ? 2 : 1);
         const el = document.getElementById('badgeLevel');
         if (el) el.innerText = '⭐ Lv. ' + data.level + ' (Evo ' + evo + ')';
       }
+
+      // Record reali dai giochi
+      if (data.morsi !== undefined) {
+        const el = document.getElementById('statMorsi');
+        if (el) el.innerText = data.morsi >= 1000 ? (data.morsi / 1000).toFixed(1) + 'k' : data.morsi;
+      }
+      if (data.zenScore !== undefined) {
+        const el = document.getElementById('statZen');
+        if (el) el.innerText = data.zenScore >= 1000 ? (data.zenScore / 1000).toFixed(1) + 'km' : data.zenScore + 'm';
+      }
+      if (data.pesci !== undefined) {
+        const el = document.getElementById('statPesci');
+        if (el) el.innerText = data.pesci;
+      }
+      if (data.passi !== undefined) {
+        const el = document.getElementById('statPassi');
+        if (el) el.innerText = data.passi >= 1000 ? (data.passi / 1000).toFixed(1) + 'k' : data.passi;
+      }
+
+      // Valutazione 8 Achievement Reali
+      const lvl = data.level || 1;
+      const morsi = data.morsi || 0;
+      const dodges = data.dodges || 0;
+      const zen = data.zenScore || 0;
+      const pesci = data.pesci || 0;
+      const bgs = data.bgCount || 1;
+
+      updateAchCard('achCard1', 'achStatus1', lvl >= 1, lvl >= 1 ? 'SBLOCCATO ★' : 'Bloccato');
+      updateAchCard('achCard2', 'achStatus2', lvl >= 10, lvl >= 10 ? 'SBLOCCATO ★' : 'Lv.' + lvl + ' / 10');
+      updateAchCard('achCard3', 'achStatus3', morsi >= 10000, morsi >= 10000 ? 'SBLOCCATO ★' : morsi + ' / 10k');
+      updateAchCard('achCard4', 'achStatus4', dodges >= 10000, dodges >= 10000 ? 'SBLOCCATO ★' : dodges + ' / 10k');
+      updateAchCard('achCard5', 'achStatus5', zen >= 2500, zen >= 2500 ? 'SBLOCCATO ★' : zen + 'm / 2.5k');
+      updateAchCard('achCard6', 'achStatus6', zen >= 5000, zen >= 5000 ? 'SBLOCCATO ★' : zen + 'm / 5k');
+      updateAchCard('achCard7', 'achStatus7', pesci >= 10000, pesci >= 10000 ? 'SBLOCCATO ★' : pesci + ' / 10k');
+      updateAchCard('achCard8', 'achStatus8', bgs >= 4, bgs >= 4 ? 'SBLOCCATO ★' : bgs + ' / 4 Sfondi');
+
+      let unlockedCount = (lvl >= 1 ? 1 : 0) + (lvl >= 10 ? 1 : 0) + (morsi >= 10000 ? 1 : 0) + (dodges >= 10000 ? 1 : 0) + (zen >= 2500 ? 1 : 0) + (zen >= 5000 ? 1 : 0) + (pesci >= 10000 ? 1 : 0) + (bgs >= 4 ? 1 : 0);
+      const mBadge = document.getElementById('medaglieBadge');
+      if (mBadge) mBadge.innerText = unlockedCount + ' / 8 MEDAGLIE';
     }
 
     function getSelectedSender() {

@@ -545,7 +545,7 @@
         <div class="vital-box">
           <div class="vital-head"><span>🌙 Energia</span><span id="valEnergy">100%</span></div>
           <div class="meter-bar-bg"><div class="meter-bar-fill fill-purple" id="barEnergy" style="width:100%;"></div></div>
-          <button class="btn-toy btn-toy-purple" onclick="sendRemoteAction('sleep')">Nanna 💤</button>
+          <button class="btn-toy btn-toy-purple" id="btnSleepAction" onclick="toggleRemoteSleep()">Nanna 💤</button>
         </div>
       </div>
     </div>
@@ -722,7 +722,7 @@
           <option value="10">10: Don McLean - American Pie</option>
           <option value="11">11: faccia nuvola - seibellaseibella</option>
           <option value="12">12: Rino Gaetano - A mano a mano</option>
-          <option value="13">13: RHCP - Purple Stain</option>
+          <option value="13">13: Prince - Purple Rain</option>
           <option value="14">14: Chiello - Quanto ti vorrei</option>
           <option value="15">15: Chiello - Acqua salata</option>
           <option value="16">16: Chiello - Crema di buccia</option>
@@ -1119,12 +1119,42 @@
       }
     }
 
+    let isPetSleeping = false;
+
+    function setSleepBtnState(sleeping) {
+      isPetSleeping = !!sleeping;
+      const b = document.getElementById('btnSleepAction');
+      if (!b) return;
+      if (isPetSleeping) {
+        b.innerHTML = 'Sveglia ☀️';
+        b.className = 'btn-toy btn-toy-yellow';
+      } else {
+        b.innerHTML = 'Nanna 💤';
+        b.className = 'btn-toy btn-toy-purple';
+      }
+    }
+
+    function toggleRemoteSleep() {
+      if (isPetSleeping) {
+        sendRemoteAction('wake');
+      } else {
+        sendRemoteAction('sleep');
+      }
+    }
+
     function sendRemoteAction(act) {
-      publishCommand({ type: 'action', text: act });
+      publishCommand({ type: 'action', text: act, action: act });
       if (act === 'feed') showToast('🍏 Pappa inviata a Kitz!');
       if (act === 'pet') showToast('💖 Coccole inviate!');
       if (act === 'clean') showToast('🫧 Bagnetto fatto!');
-      if (act === 'sleep') showToast('💤 Kitz messo a nanna!');
+      if (act === 'sleep') {
+        showToast('💤 Kitz messo a nanna!');
+        setSleepBtnState(true);
+      }
+      if (act === 'wake') {
+        showToast('☀️ Kitz svegliato!');
+        setSleepBtnState(false);
+      }
     }
 
     function sendRemoteGift(type, amount) {

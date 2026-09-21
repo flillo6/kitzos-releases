@@ -1,8 +1,8 @@
 {
-  "version": "0.2.4",
-  "spiffs_version": "0.3",
+  "version": "0.1",
+  "spiffs_version": "0.1",
   "firmware_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/firmware.bin",
   "spiffs_url": "https://raw.githubusercontent.com/flillo6/kitzos-releases/main/spiffs.bin",
-  "notes": "KitzOS v0.2.4: Prince - Purple Rain + 17 Covers Zero-Lag Sprite + Reminder Date",
+  "notes": "KitzOS v0.1: Golden Master - Prince, Zero-Lag Covers, Promemoria con Data",
   "force": false
 }

@@ -722,7 +722,7 @@
           <option value="10">10: Don McLean - American Pie</option>
           <option value="11">11: faccia nuvola - seibellaseibella</option>
           <option value="12">12: Rino Gaetano - A mano a mano</option>
-          <option value="13">13: Prince - Purple Rain</option>
+          <option value="13">13: Prince - Purple Rain (Min 4:13 - 4:53)</option>
           <option value="14">14: Chiello - Quanto ti vorrei</option>
           <option value="15">15: Chiello - Acqua salata</option>
           <option value="16">16: Chiello - Crema di buccia</option>
@@ -732,7 +732,6 @@
       </div>
     </div>
 
-    <!-- AGGIORNAMENTO FIRMWARE OTA REMOTO -->
     <!-- AGGIORNAMENTO FIRMWARE OTA REMOTO -->
     <div class="card" style="border: 2px solid #8b5cf6;">
       <div class="card-header">
@@ -750,11 +749,12 @@
       <details>
         <summary style="cursor:pointer; font-size:13px; font-weight:800; color:#222538;">⚙️ Impostazioni Connessione (Wi-Fi &amp; Cloud)</summary>
         <div style="margin-top:14px; font-size:12px; color:var(--sub);">
-          <label style="display:block; margin-bottom:4px; font-weight:800; color:#222538;">Indirizzo locale Kitz (quando siete sullo stesso Wi-Fi):</label>
-          <input type="text" id="localHostInput" placeholder="http://kitz.local oppure IP (es. 192.168.1.100)" style="width:100%; margin-bottom:10px;">
+          <div style="background:#dcfce7;border:1.5px solid #16a34a;border-radius:12px;padding:10px;margin-bottom:12px;color:#15803d;font-size:11px;font-weight:700;line-height:1.4;">
+            ☁️ <b>Cloud MQTT Zero-Config:</b> La comunicazione remota con Kitz avviene in tempo reale via MQTT sicuro (broker.emqx.io). Nessun database esterno o account richiesto!
+          </div>
 
-          <label style="display:block; margin-bottom:4px; font-weight:800; color:#222538;">URL Database Firebase (quando siete a distanza):</label>
-          <input type="text" id="cloudUrlInput" placeholder="https://tuo-kitz-default-rtdb.firebaseio.com" style="width:100%; margin-bottom:10px;">
+          <label style="display:block; margin-bottom:4px; font-weight:800; color:#222538;">Indirizzo locale LAN Kitz (opzionale):</label>
+          <input type="text" id="localHostInput" placeholder="http://kitz.local oppure IP (es. 192.168.1.100)" style="width:100%; margin-bottom:10px;">
 
           <label style="display:block; margin-bottom:4px; font-weight:800; color:#222538;">PIN d'accesso al portale:</label>
           <input type="password" id="newPinInput" placeholder="Nuovo PIN (default 1234)" style="width:100%; margin-bottom:12px;">
@@ -850,19 +850,31 @@
       document.getElementById('pinGate').style.display = 'none';
     }
 
+    let lastTelemetryReceivedAt = 0;
+
     function updateConnBadge() {
       const badge = document.getElementById('connBadge');
       if (!badge) return;
       if (currentMode === 'local') {
         badge.innerHTML = '🟢 MODALITÀ WI-FI LOCALE';
         badge.style.background = '#ffd13b';
+        badge.style.color = '#222538';
       } else {
         if (isMqttConnected) {
-          badge.innerHTML = '☁️ CLOUD ATTIVO &bull; REALTIME MQTT';
-          badge.style.background = '#2ed573';
+          const isFresh = (Date.now() - lastTelemetryReceivedAt < 60000);
+          if (isFresh && lastTelemetryReceivedAt > 0) {
+            badge.innerHTML = '🟢 KITZ ONLINE (Cloud MQTT)';
+            badge.style.background = '#2ed573';
+            badge.style.color = '#fff';
+          } else {
+            badge.innerHTML = '🟡 CLOUD ATTIVO &bull; In attesa di Kitz...';
+            badge.style.background = '#ffd13b';
+            badge.style.color = '#222538';
+          }
         } else {
-          badge.innerHTML = '🟡 CLOUD IN CONNESSIONE...';
-          badge.style.background = '#ffd13b';
+          badge.innerHTML = '🔴 CLOUD DISCONNESSO';
+          badge.style.background = '#fee2e2';
+          badge.style.color = '#dc2626';
         }
       }
     }
@@ -900,6 +912,12 @@
 
     function updatePetVitalsFromTelemetry(data) {
       if (!data) return;
+      lastTelemetryReceivedAt = Date.now();
+      updateConnBadge();
+
+      if (data.sleeping !== undefined) {
+        setSleepBtnState(data.sleeping);
+      }
 
       const liveB = document.getElementById('liveBadge');
       if (liveB) {

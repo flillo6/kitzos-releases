@@ -774,8 +774,8 @@
     let cloudUrl = localStorage.getItem('kitz_cloud_url') || '';
     let userPin = localStorage.getItem('kitz_fra_pin') || '1234';
 
-    // Costanti MQTT Cloud Remoto (EMQX Zero-Config Public Broker)
-    const MQTT_BROKER_WSS = 'wss://broker.emqx.io:8084/mqtt';
+    // Costanti MQTT Cloud Remoto (HiveMQ Zero-Config Public Broker)
+    const MQTT_BROKER_WSS = 'wss://broker.hivemq.com:8884/mqtt';
     const MQTT_CMD_TOPIC = 'kitz/v1/marti_fra/cmd';
     const MQTT_STATUS_TOPIC = 'kitz/v1/marti_fra/status';
     const MQTT_CHAT_TOPIC = 'kitz/v1/marti_fra/chat';

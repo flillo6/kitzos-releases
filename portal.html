@@ -1178,8 +1178,8 @@
     }
 
     // Init
-    document.getElementById('localHostInput').value = localHost;
-    document.getElementById('cloudUrlInput').value = cloudUrl;
+    if (document.getElementById('localHostInput')) document.getElementById('localHostInput').value = localHost;
+    if (document.getElementById('cloudUrlInput')) document.getElementById('cloudUrlInput').value = cloudUrl;
     setConnMode(currentMode);
     initMqtt();
     pollLocalTelemetry();

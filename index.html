@@ -1230,18 +1230,15 @@
     }
 
     function saveSettings() {
-      const lh = document.getElementById('localHostInput').value.trim();
-      const cu = document.getElementById('cloudUrlInput').value.trim();
-      const np = document.getElementById('newPinInput').value.trim();
-      if (lh) localStorage.setItem('kitz_local_host', lh);
-      if (cu) localStorage.setItem('kitz_cloud_url', cu);
-      if (np) localStorage.setItem('kitz_fra_pin', np);
+      const lhEl = document.getElementById('localHostInput');
+      const npEl = document.getElementById('newPinInput');
+      if (lhEl && lhEl.value.trim()) localStorage.setItem('kitz_local_host', lhEl.value.trim());
+      if (npEl && npEl.value.trim()) localStorage.setItem('kitz_fra_pin', npEl.value.trim());
       showToast('✓ Impostazioni salvate!');
     }
 
     // Init
-    document.getElementById('localHostInput').value = localHost;
-    document.getElementById('cloudUrlInput').value = cloudUrl;
+    if (document.getElementById('localHostInput')) document.getElementById('localHostInput').value = localHost;
     setConnMode(currentMode);
     initMqtt();
     pollLocalTelemetry();

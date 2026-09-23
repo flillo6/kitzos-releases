@@ -1058,7 +1058,7 @@
       payload.ts = Math.floor(Date.now() / 1000);
       payload.id = 'cmd_' + Date.now();
       if (!payload.sender) payload.sender = getSelectedSender();
-      const isRetained = (payload.type === 'msg' || payload.type === 'voice');
+      const isRetained = false;
 
       const sendMqtt = () => {
         if (mqttClient && isMqttConnected) {

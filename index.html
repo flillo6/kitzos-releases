@@ -9,8 +9,8 @@
   <title>Kitz Remote &bull; Console di Fra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script>if (typeof mqtt === 'undefined') document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.5.0/mqtt.min.js"><\/script>');</script>
   <style>
     :root {
       --bg: #fcf6ea;
@@ -513,10 +513,10 @@
       <div style="font-family:'Silkscreen',monospace; font-size:18px; font-weight:700; color:#222538; margin-bottom:2px;">KITZ LIVE STATUS</div>
 
       <div class="badges-row">
-        <div class="badge-chip chip-gold" id="badgeLevel">⭐ Lv. 1 (Evo 1)</div>
-        <div class="badge-chip chip-cyan" id="badgeCoins">🪙 50 Monete</div>
-        <div class="badge-chip chip-green" id="badgeBattery">🔋 92% Carica</div>
-        <div class="badge-chip chip-pink" id="badgeFood">🐟 Dispensa: 5</div>
+        <div class="badge-chip chip-gold" id="badgeLevel">⭐ In attesa...</div>
+        <div class="badge-chip chip-cyan" id="badgeCoins">🪙 -- Monete</div>
+        <div class="badge-chip chip-green" id="badgeBattery">🔋 --% Carica</div>
+        <div class="badge-chip chip-pink" id="badgeFood">🐟 Dispensa: --</div>
       </div>
     </div>
 
@@ -774,14 +774,15 @@
     let cloudUrl = localStorage.getItem('kitz_cloud_url') || '';
     let userPin = localStorage.getItem('kitz_fra_pin') || '1234';
 
-    // Costanti MQTT Cloud Remoto (HiveMQ Zero-Config Public Broker)
-    const MQTT_BROKER_WSS = 'wss://broker.hivemq.com:8884/mqtt';
+    // Costanti MQTT Cloud Remoto (EMQX Zero-Config Public Broker)
+    const MQTT_BROKER_WSS = 'wss://broker.emqx.io:8084/mqtt';
     const MQTT_CMD_TOPIC = 'kitz/v1/marti_fra/cmd';
     const MQTT_STATUS_TOPIC = 'kitz/v1/marti_fra/status';
     const MQTT_CHAT_TOPIC = 'kitz/v1/marti_fra/chat';
 
     let mqttClient = null;
     let isMqttConnected = false;
+    let mqttConnecting = true;
 
     function initMqtt() {
       try {
@@ -790,6 +791,8 @@
           setTimeout(initMqtt, 300);
           return;
         }
+        mqttConnecting = true;
+        updateConnBadge();
         const clientId = 'fra_web_' + Math.random().toString(16).substring(2, 10);
         mqttClient = mqtt.connect(MQTT_BROKER_WSS, {
           clientId: clientId,
@@ -801,6 +804,7 @@
         mqttClient.on('connect', () => {
           console.log('[MQTT] Connesso al broker cloud EMQX!');
           isMqttConnected = true;
+          mqttConnecting = false;
           updateConnBadge();
           mqttClient.subscribe([MQTT_STATUS_TOPIC, MQTT_CHAT_TOPIC], (err) => {
             if (!err) console.log('[MQTT] Iscritto con successo a status e chat.');
@@ -826,15 +830,19 @@
         mqttClient.on('error', (err) => {
           console.warn('[MQTT] Errore:', err);
           isMqttConnected = false;
+          mqttConnecting = false;
           updateConnBadge();
         });
 
         mqttClient.on('offline', () => {
           isMqttConnected = false;
+          mqttConnecting = false;
           updateConnBadge();
         });
       } catch (e) {
         console.error('[MQTT] Errore inizializzazione:', e);
+        mqttConnecting = false;
+        updateConnBadge();
       }
     }
 
@@ -872,12 +880,29 @@
             badge.style.background = '#ffd13b';
             badge.style.color = '#222538';
           }
+        } else if (mqttConnecting) {
+          badge.innerHTML = '🟡 CONNESSIONE AL CLOUD...';
+          badge.style.background = '#fef3c7';
+          badge.style.color = '#b45309';
         } else {
           badge.innerHTML = '🔴 CLOUD DISCONNESSO';
           badge.style.background = '#fee2e2';
           badge.style.color = '#dc2626';
         }
       }
+    }
+
+    function pollLocalTelemetry() {
+      const host = (localHost && localHost.trim().length > 0) ? localHost.trim() : 'http://kitz.local';
+      fetch(host + '/api/stats', { mode: 'cors' })
+        .then(res => {
+          if (!res.ok) throw new Error('Local stats error');
+          return res.json();
+        })
+        .then(data => {
+          updatePetVitalsFromTelemetry(data);
+        })
+        .catch(() => {});
     }
 
     function setConnMode(m) {
@@ -888,6 +913,9 @@
       if (btnL) btnL.classList.toggle('active', m === 'local');
       if (btnC) btnC.classList.toggle('active', m === 'cloud');
       updateConnBadge();
+      if (m === 'local') {
+        pollLocalTelemetry();
+      }
     }
 
     function showToast(msg) {
@@ -1070,6 +1098,7 @@
           .then(res => {
             if (!res.ok) throw new Error('LAN HTTP error');
             console.log('[LAN] Comando inviato con successo');
+            setTimeout(pollLocalTelemetry, 600);
           })
           .catch(() => {
             console.log('[LAN] Kitz non raggiungibile in LAN: invio al Cloud MQTT con coda offline!');
@@ -1215,6 +1244,8 @@
     document.getElementById('cloudUrlInput').value = cloudUrl;
     setConnMode(currentMode);
     initMqtt();
+    pollLocalTelemetry();
+    setInterval(pollLocalTelemetry, 4000);
     loadChatHistory();
     setInterval(loadChatHistory, 15000);
   </script>

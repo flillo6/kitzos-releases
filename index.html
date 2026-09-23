@@ -786,7 +786,8 @@
     function initMqtt() {
       try {
         if (typeof mqtt === 'undefined') {
-          console.warn('[MQTT] Libreria MQTT.js non ancora caricata.');
+          console.warn('[MQTT] Libreria MQTT.js in caricamento, riprovo tra 300ms...');
+          setTimeout(initMqtt, 300);
           return;
         }
         const clientId = 'fra_web_' + Math.random().toString(16).substring(2, 10);

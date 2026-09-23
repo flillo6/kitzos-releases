@@ -730,6 +730,10 @@
         </select>
         <button class="btn-toy btn-toy-mint" style="width:auto; padding:11px 18px;" onclick="sendRemoteMusic()">DEDICA 🎶</button>
       </div>
+      <div style="margin-top:12px; border-top: 1.5px dashed #ecdca0; padding-top: 10px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; color:var(--sub); font-weight:600;">Vuoi che Martina le sblocchi con la Ruota?</span>
+        <button class="btn-toy" style="width:auto; font-size:11px; padding:6px 12px; background:#fff7ed; border-color:#f97316; color:#c2410c;" onclick="sendRelockMusic()">🔒 Riblocca tutte</button>
+      </div>
     </div>
 
     <!-- AGGIORNAMENTO FIRMWARE OTA REMOTO -->
@@ -1220,6 +1224,13 @@
       const trk = parseInt(sel.value, 10) || 0;
       publishCommand({ type: 'music', track: trk, trackIdx: trk });
       showToast('🎶 Canzone inviata al giradischi di Kitz!');
+    }
+
+    function sendRelockMusic() {
+      if (confirm('Vuoi ribloccare tutte le 16 canzoni (tranne Battisti) in modo che Martina debba sbloccarle una ad una girando la Ruota della Fortuna?')) {
+        sendRemoteAction('relock_music');
+        showToast('🔒 Canzoni ribloccate! Martina le sbloccherà con la Ruota.');
+      }
     }
 
     function sendRemoteOta() {
